@@ -1,13 +1,12 @@
 #include "threadpool.hpp"
 
 ThreadPool::ThreadPool(size_t num_threads)
-    : stop(false) 
-    {
-        for (size_t i = 0; i < num_threads; ++i) {
-            workers.emplace_back(&ThreadPool::worker, this);
-
-        }
+    : stop(false), active_tasks(0) {
+    for (size_t i = 0; i < num_threads; ++i) {
+        workers.emplace_back(&ThreadPool::worker, this);
     }
+    std::cout << workers.size() << std::endl;
+}
 
 ThreadPool::~ThreadPool() {
     {
@@ -24,8 +23,14 @@ void ThreadPool::enqueue(std::function<void()> task) {
     {
         std::unique_lock<std::mutex> lock(queue_mutex);
         tasks.push(std::move(task));
+        active_tasks++;
     }
     condition.notify_one();
+}
+
+void ThreadPool::waitForCompletion() {
+    std::unique_lock<std::mutex> lock(queue_mutex);
+    condition.wait(lock, [this] { return tasks.empty() && active_tasks == 0; });
 }
 
 void ThreadPool::worker() {
@@ -38,7 +43,10 @@ void ThreadPool::worker() {
                 return;
             }
             task = std::move(tasks.front());
+            tasks.pop();
         }
         task();
+        active_tasks--;
+        condition.notify_all();
     }
 }

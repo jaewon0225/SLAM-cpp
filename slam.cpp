@@ -126,12 +126,12 @@ void PoseGraph::computeErrorAndJacobians(Eigen::MatrixXd& H, Eigen::VectorXd& b)
             dtij << xj.position[0] - xi.position[0], 
                     xj.position[1] - xi.position[1];
 
-            Eigen::Matrix3d Aij = Eigen::MatrixXd::Zero(3, 3);
+            Eigen::Matrix3d Aij = Eigen::Matrix3d::Zero();
             Aij.block<2, 2>(0, 0) = -Rij.transpose() * Ri.transpose();
             Aij.block<2, 1>(0, 2) = Rij.transpose() * dRi.transpose() * dtij;
             Aij(2, 2) = -1;
 
-            Eigen::Matrix3d Bij = Eigen::MatrixXd::Zero(3, 3);
+            Eigen::Matrix3d Bij = Eigen::Matrix3d::Zero();
             Bij.block<2, 2>(0, 0) = Rij.transpose() * Ri.transpose();
             Bij(2, 2) = 1;
 
@@ -156,7 +156,7 @@ void PoseGraph::computeErrorAndJacobians(Eigen::MatrixXd& H, Eigen::VectorXd& b)
         });
     }
 
-    // The ThreadPool destructor will join all threads
+    pool.waitForCompletion();
 }
 
 void PoseGraph::optimise(int iterations) {
@@ -182,7 +182,7 @@ void PoseGraph::optimise(int iterations) {
             outFile << std::round(poses[i].position.x()*1000)/1000 << "," << std::round(poses[i].position.y()*1000)/1000 << "," << std::round(poses[i].orientation*1000)/1000 << std::endl;
         }
         outFile.close();
-        std::cout << "Optimizing" << std::endl;
+        std::cout << "Optimising" << std::endl;
         filenum++;
     }
 }
