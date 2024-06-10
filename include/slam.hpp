@@ -6,6 +6,7 @@
 #include <string>
 #include <Eigen/Dense>
 
+namespace PoseGraph {
 class Pose {
 public:
     Eigen::Vector2d position; // (x,y)
@@ -44,3 +45,4 @@ public:
 private:
     void computeErrorAndJacobians(Eigen::MatrixXd& H, Eigen::VectorXd& b);
 };
+} // namespace PoseGraph

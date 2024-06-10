@@ -2,6 +2,7 @@
 #include "slam.hpp"
 #include "threadpool.cpp"
 
+namespace PoseGraph{
 Pose::Pose(double x, double y, double theta)
     : position(x,y), orientation(theta) {}
 
@@ -229,3 +230,4 @@ void PoseGraph::importPoses(std::string filename) {
         addPose(pose, ID);
     }
 }
+} // namespace PoseGraph
