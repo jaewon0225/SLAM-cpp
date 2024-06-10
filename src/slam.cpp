@@ -1,6 +1,7 @@
 #include <cmath>
 #include "slam.hpp"
 #include "threadpool.cpp"
+#define MULTITHREAD true
 
 namespace PoseGraph{
 Pose::Pose(double x, double y, double theta)
@@ -32,66 +33,67 @@ void PoseGraph::addEdge(const Edge& edge) {
     edges.push_back(edge);
 }
 
-// void PoseGraph::computeErrorAndJacobians(Eigen::MatrixXd& H, Eigen::VectorXd& b) {
-//     for (const Edge& edge : edges ) {
-//         u_int64_t i = edge.from;
-//         u_int64_t j = edge.to;
-
-//         const Pose& xi = poses[i];
-//         const Pose& xj = poses[j];
-//         const Pose& zij = edge.measurement;
-
-//         // Compute error term
-//         Eigen::Matrix3d Ti = xi.toTransformationMatrix();
-//         Eigen::Matrix3d Tj = xj.toTransformationMatrix();
-//         Eigen::Matrix3d Tij = zij.toTransformationMatrix();
-//         Eigen::Matrix3d eij = Tij.inverse() * Ti.inverse() * Tj;
-//         Pose eij_pose = fromTransformationMatrix(eij);
-//         Eigen::Vector3d eij_vec;
-//         eij_vec << eij_pose.position[0], eij_pose.position[1], eij_pose.orientation;
-
-//         Eigen::Matrix2d Ri = Ti.topLeftCorner<2, 2>();
-//         Eigen::Matrix2d Rij = Tij.topLeftCorner<2, 2>();
-
-//         double s = sin(xi.orientation);
-//         double c = cos(xi.orientation);
-
-//         Eigen::Matrix2d dRi;
-//         dRi << -s, -c,
-//                c, -s;
-        
-//         Eigen::Vector2d dtij;
-//         dtij << xj.position[0] - xi.position[0], 
-//                 xj.position[1] - xi.position[1];
-
-//         Eigen::Matrix3d Aij = Eigen::MatrixXd::Zero(3,3);
-//         Aij.block<2,2>(0,0) = - Rij.transpose() * Ri.transpose();
-//         Aij.block<2,1>(0,2) = Rij.transpose() * dRi.transpose() * dtij;
-//         Aij(2,2) = -1;
-
-//         Eigen::Matrix3d Bij = Eigen::MatrixXd::Zero(3,3);
-//         Bij.block<2,2>(0,0) = Rij.transpose() * Ri.transpose();
-//         Bij(2,2) = 1;
-
-//         Eigen::Matrix3d Hii = Aij.transpose() * edge.information * Aij;
-//         Eigen::Matrix3d Hij = Aij.transpose() * edge.information * Bij;
-//         Eigen::Matrix3d Hji = Hij.transpose();
-//         Eigen::Matrix3d Hjj = Bij.transpose() * edge.information * Bij;
-
-//         Eigen::Vector3d bi  = Aij.transpose() * edge.information * eij_vec;
-//         Eigen::Vector3d bj  = Bij.transpose() * edge.information * eij_vec;
-
-//         H.block<3, 3>(3 * i, 3 * i) += Hii;
-//         H.block<3, 3>(3 * i, 3 * j) += Hij;
-//         H.block<3, 3>(3 * j, 3 * i) += Hji;
-//         H.block<3, 3>(3 * j, 3 * j) += Hjj;
-
-//         b.segment<3>(3 * i) += bi;
-//         b.segment<3>(3 * j) += bj;
-//     }
-// }
-
 void PoseGraph::computeErrorAndJacobians(Eigen::MatrixXd& H, Eigen::VectorXd& b) {
+#if !MULTITHREAD 
+    for (const Edge& edge : edges ) {
+        u_int64_t i = edge.from;
+        u_int64_t j = edge.to;
+
+        const Pose& xi = poses[i];
+        const Pose& xj = poses[j];
+        const Pose& zij = edge.measurement;
+
+        // Compute error term
+        Eigen::Matrix3d Ti = xi.toTransformationMatrix();
+        Eigen::Matrix3d Tj = xj.toTransformationMatrix();
+        Eigen::Matrix3d Tij = zij.toTransformationMatrix();
+        Eigen::Matrix3d eij = Tij.inverse() * Ti.inverse() * Tj;
+        Pose eij_pose = fromTransformationMatrix(eij);
+        Eigen::Vector3d eij_vec;
+        eij_vec << eij_pose.position[0], eij_pose.position[1], eij_pose.orientation;
+
+        Eigen::Matrix2d Ri = Ti.topLeftCorner<2, 2>();
+        Eigen::Matrix2d Rij = Tij.topLeftCorner<2, 2>();
+
+        double s = sin(xi.orientation);
+        double c = cos(xi.orientation);
+
+        Eigen::Matrix2d dRi;
+        dRi << -s, -c,
+               c, -s;
+        
+        Eigen::Vector2d dtij;
+        dtij << xj.position[0] - xi.position[0], 
+                xj.position[1] - xi.position[1];
+
+        Eigen::Matrix3d Aij = Eigen::MatrixXd::Zero(3,3);
+        Aij.block<2,2>(0,0) = - Rij.transpose() * Ri.transpose();
+        Aij.block<2,1>(0,2) = Rij.transpose() * dRi.transpose() * dtij;
+        Aij(2,2) = -1;
+
+        Eigen::Matrix3d Bij = Eigen::MatrixXd::Zero(3,3);
+        Bij.block<2,2>(0,0) = Rij.transpose() * Ri.transpose();
+        Bij(2,2) = 1;
+
+        Eigen::Matrix3d Hii = Aij.transpose() * edge.information * Aij;
+        Eigen::Matrix3d Hij = Aij.transpose() * edge.information * Bij;
+        Eigen::Matrix3d Hji = Hij.transpose();
+        Eigen::Matrix3d Hjj = Bij.transpose() * edge.information * Bij;
+
+        Eigen::Vector3d bi  = Aij.transpose() * edge.information * eij_vec;
+        Eigen::Vector3d bj  = Bij.transpose() * edge.information * eij_vec;
+
+        H.block<3, 3>(3 * i, 3 * i) += Hii;
+        H.block<3, 3>(3 * i, 3 * j) += Hij;
+        H.block<3, 3>(3 * j, 3 * i) += Hji;
+        H.block<3, 3>(3 * j, 3 * j) += Hjj;
+
+        b.segment<3>(3 * i) += bi;
+        b.segment<3>(3 * j) += bj;
+    }
+}
+
+#else
     ThreadPool pool(std::thread::hardware_concurrency());
     std::mutex mtx;
 
@@ -159,6 +161,7 @@ void PoseGraph::computeErrorAndJacobians(Eigen::MatrixXd& H, Eigen::VectorXd& b)
 
     pool.waitForCompletion();
 }
+#endif
 
 void PoseGraph::optimise(int iterations) {
     int filenum = 1;

@@ -10,7 +10,7 @@ if num_rows == 1:
     axes = [axes]
 
 filenum = 0
-for ax, file_name in zip(axes.flat, ['output/output_0.txt', 'output/output_1.txt', 'output/output_2.txt', 'output/output_3.txt', 'output/output_4.txt', 'output/output_5.txt']):
+for ax, file_name in zip(axes.flat, ['../output/output_0.txt', '../output/output_1.txt', '../output/output_2.txt', '../output/output_3.txt', '../output/output_4.txt', '../output/output_5.txt']):
     with open(file_name, 'r') as file:
         data = file.readlines()
 
