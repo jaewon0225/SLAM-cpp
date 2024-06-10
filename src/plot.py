@@ -22,8 +22,6 @@ for ax, file_name in zip(axes.flat, ['../output/output_0.txt', '../output/output
         y_values.append(y)
 
     ax.plot(x_values, y_values, label=file_name)
-    ax.set_xlabel('X Label')
-    ax.set_ylabel('Y Label')
     ax.set_title(f"Iteration {filenum}")
     filenum += 1
 
