@@ -36,7 +36,7 @@ public:
     std::vector<Pose> poses;
     std::vector<Edge> edges;
 
-    void addPose(const Pose& pose, u_int64_t index);
+    void addPose(const Pose& pose, u_int32_t index);
     void addEdge(const Edge& edge);
     void optimise(int iteration);
     void importEdges(std::string filename);

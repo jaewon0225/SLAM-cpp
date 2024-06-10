@@ -25,7 +25,7 @@ static Pose fromTransformationMatrix(const Eigen::Matrix3d& matrix) {
 Edge::Edge(int from, int to, const Pose& measurement, const Eigen::Matrix3d& information)
     : from(from), to(to), measurement(measurement), information(information) {}
 
-void PoseGraph::addPose(const Pose& pose, u_int64_t index) {
+void PoseGraph::addPose(const Pose& pose, u_int32_t index) {
     poses.push_back(pose);
 }
 
@@ -91,7 +91,6 @@ void PoseGraph::computeErrorAndJacobians(Eigen::MatrixXd& H, Eigen::VectorXd& b)
         b.segment<3>(3 * i) += bi;
         b.segment<3>(3 * j) += bj;
     }
-}
 
 #else
     ThreadPool pool(std::thread::hardware_concurrency());
