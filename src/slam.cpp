@@ -160,7 +160,6 @@ void PoseGraph::computeErrorAndJacobians(Eigen::MatrixXd& H, Eigen::VectorXd& b)
 }
 
 void PoseGraph::optimise(int iterations) {
-    std::cout << poses.size() << std::endl;
     int filenum = 1;
     for (int iter = 0; iter < iterations; ++iter) {
         Eigen::MatrixXd H = Eigen::MatrixXd::Zero(poses.size() * 3, poses.size() * 3);
