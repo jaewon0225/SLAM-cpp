@@ -184,7 +184,7 @@ void PoseGraph::optimise(int iterations) {
             outFile << std::round(poses[i].position.x()*1000)/1000 << "," << std::round(poses[i].position.y()*1000)/1000 << "," << std::round(poses[i].orientation*1000)/1000 << std::endl;
         }
         outFile.close();
-        std::cout << "Optimising" << std::endl;
+        std::cout << "Optimising..." << std::endl;
         filenum++;
     }
 }
