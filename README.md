@@ -1,1 +1,1 @@
-Pose Graoh Optimisation SLAM implementation in C++
+Pose Graph Optimisation SLAM implementation in C++
