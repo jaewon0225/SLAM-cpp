@@ -1,26 +1,41 @@
-cmake_minimum_required(VERSION 3.10)
-set(PROJECT_NAME SLAM)
-project(${PROJECT_NAME} VERSION 1.0.0 LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.20)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+project(cpp_slam VERSION 1.0.0 LANGUAGES CXX)
 
-set(SOURCES src/main.cpp)
+include_directories(src
+                    include
+)
 
-# Include Eigen library
-include_directories(/opt/homebrew/opt/eigen/include/eigen3)
+add_library(cpp_slam 
+            src/slam.cpp
+            src/threadpool.cpp
+            src/timer.cpp
+)
 
-<<<<<<< Updated upstream
-# Include directories
-include_directories(include)
-=======
+target_include_directories(cpp_slam
+    PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+set(PUBLIC_HEADERS
+    slam.hpp
+    threadpool.hpp
+    timer.hpp
+)
+
+set_target_properties(cpp_slam PROPERTIES PUBLIC_HEADER "${PUBLIC_HEADERS}")
+
 # Find the Eigen3 package
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
->>>>>>> Stashed changes
+target_link_libraries(cpp_slam Eigen3::Eigen)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+install(TARGETS cpp_slam DESTINATION lib
+        PUBLIC_HEADER DESTINATION include
+)
 
-set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
-target_link_libraries(${PROJECT_NAME} Eigen3::Eigen)
-if (UNIX)
-   target_link_libraries(${PROJECT_NAME} pthread)
-endif (UNIX)
+# -----------------------------------------------------------------
+add_subdirectory( example )
