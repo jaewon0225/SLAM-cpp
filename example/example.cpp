@@ -1,4 +1,4 @@
-#include "slam.cpp"
+#include "slam.hpp"
 
 int main() {
     PoseGraph::PoseGraph graph;
