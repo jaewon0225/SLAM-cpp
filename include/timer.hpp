@@ -1,7 +1,7 @@
 #pragma once
 #include <chrono>
 
-namespace Timer{
+namespace PoseGraph{
 class Timer {
 public:
     Timer();

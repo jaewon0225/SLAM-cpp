@@ -1,7 +1,9 @@
 #include <cmath>
+#include <iostream>
+#include <fstream>
 #include "slam.hpp"
-#include "threadpool.cpp"
-#define MULTITHREAD true
+#include "threadpool.hpp"
+#define MULTITHREAD 1
 
 namespace PoseGraph{
 Pose::Pose(double x, double y, double theta)

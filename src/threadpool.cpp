@@ -1,5 +1,6 @@
 #include "threadpool.hpp"
 
+namespace PoseGraph{
 ThreadPool::ThreadPool(size_t num_threads)
     : stop(false), active_tasks(0) {
     for (size_t i = 0; i < num_threads; ++i) {
@@ -49,3 +50,4 @@ void ThreadPool::worker() {
         condition.notify_all();
     }
 }
+} // namespace PoseGraph

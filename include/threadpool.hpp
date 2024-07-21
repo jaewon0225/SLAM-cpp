@@ -1,5 +1,4 @@
 #pragma once
-#include <future>
 #include <thread>
 #include <mutex>
 #include <queue>
@@ -7,6 +6,7 @@
 #include <condition_variable>
 #include <functional>
 
+namespace PoseGraph{
 class ThreadPool {
 public:
     ThreadPool(size_t num_threads);
@@ -25,3 +25,4 @@ private:
 
     void worker();
 };
+} // namespace PoseGraph

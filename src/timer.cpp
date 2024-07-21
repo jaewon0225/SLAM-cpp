@@ -1,6 +1,6 @@
 #include "timer.hpp"
 
-namespace Timer{
+namespace PoseGraph{
 Timer::Timer() : m_start(std::chrono::high_resolution_clock::now()),
                  m_last_check(std::chrono::high_resolution_clock::now()) {}
 
@@ -19,4 +19,4 @@ double Timer::elapsedSinceCheck() {
     m_last_check = end;
     return std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() / 1000.0;
 }
-}
+} // namespace PoseGraph
