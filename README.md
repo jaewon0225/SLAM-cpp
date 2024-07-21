@@ -1,4 +1,4 @@
-Pose Graph Optimisation SLAM implementation in C++
+Pose Graph Optimisation SLAM Library in C++
 
 Current file format is .graph but any text file that matches the format of the examples in the data directory will work.
 
