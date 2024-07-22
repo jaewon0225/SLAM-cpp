@@ -19,4 +19,4 @@ make
 ```
 Now you can import this library in your project as cpp_slam!
 
-Import edges/vertices with PoseGraph::importEdges/Poses function and start optimising the pose graph with PoseGraph::optimise. The user will have to provide the number of iterations for now, but the future plan is to add a threshold to define iteration numbers.
+Import edges/vertices with PoseGraph::importEdges/Poses function and start optimising the pose graph with PoseGraph::optimise.
