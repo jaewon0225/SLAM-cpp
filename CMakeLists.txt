@@ -7,13 +7,13 @@ include_directories(src
                     include
 )
 
-add_library(cpp_slam 
+add_library(${PROJECT_NAME} 
             src/slam.cpp
             src/threadpool.cpp
             src/timer.cpp
 )
 
-target_include_directories(cpp_slam
+target_include_directories(${PROJECT_NAME}
     PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_INSTALL_INCLUDEDIR}
@@ -25,15 +25,15 @@ set(PUBLIC_HEADERS
     timer.hpp
 )
 
-set_target_properties(cpp_slam PROPERTIES PUBLIC_HEADER "${PUBLIC_HEADERS}")
+set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${PUBLIC_HEADERS}")
 
 # Find the Eigen3 package
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
-target_link_libraries(cpp_slam Eigen3::Eigen)
+target_link_libraries(${PROJECT_NAME} Eigen3::Eigen)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
 
-install(TARGETS cpp_slam DESTINATION lib
+install(TARGETS ${PROJECT_NAME} DESTINATION lib
         PUBLIC_HEADER DESTINATION include
 )
 
