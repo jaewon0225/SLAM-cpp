@@ -2,6 +2,21 @@ Pose Graph Optimisation SLAM Library in C++
 
 Current file format is .graph but any text file that matches the format of the examples in the data directory will work.
 
-Import edges/vertices with PoseGraph::importEdges/Poses function and start optimising the pose graph with PoseGraph::optimise. The user will have to provide the number of iterations for now, but the future plan is to add a threshold to define iteration numbers.
+This library requires Eigen3 library to be installed in your system. Refer to https://eigen.tuxfamily.org/index.php?title=Main_Page#Download for more details, or for macs, simply do 
+```
+brew install eigen
+```
 
-Will require Eigen library to use.
+You can then build the project by running the following in your project root:
+```
+mkdir -p build && cd build
+```
+```
+cmake ..
+```
+```
+make
+```
+Now you can import this library in your project as cpp_slam!
+
+Import edges/vertices with PoseGraph::importEdges/Poses function and start optimising the pose graph with PoseGraph::optimise. The user will have to provide the number of iterations for now, but the future plan is to add a threshold to define iteration numbers.
