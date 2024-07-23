@@ -4,18 +4,18 @@ Current file format is .graph but any text file that matches the format of the e
 
 This library requires Eigen3 library to be installed in your system. Refer to https://eigen.tuxfamily.org/index.php?title=Main_Page#Download for more details, or for macs, simply do 
 ```
-brew install eigen
+$ brew install eigen
 ```
 
 You can then build the project by running the following in your project root:
 ```
-mkdir -p build && cd build
+$ mkdir -p build && cd build
 ```
 ```
-cmake ..
+$ cmake ..
 ```
 ```
-make
+$ make
 ```
 Now you can import this library in your project as cpp_slam!
 
