@@ -25,3 +25,5 @@ $ make
 Now you can import this library in your project as cpp_slam!
 
 Import edges/vertices with PoseGraph::importEdges/Poses function and start optimising the pose graph with PoseGraph::optimise.
+
+Happy SLAM-ing! :)
