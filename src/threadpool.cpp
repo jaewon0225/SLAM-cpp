@@ -1,4 +1,5 @@
 #include "threadpool.hpp"
+#include <iostream>
 
 namespace PoseGraph {
 ThreadPool::ThreadPool(size_t num_threads) : stop(false), active_tasks(0) {
@@ -23,8 +24,9 @@ void ThreadPool::enqueue(std::function<void()> task) {
     std::unique_lock<std::mutex> lock(queue_mutex);
     tasks.push(std::move(task));
     active_tasks++;
+    std::cout << "enqueued!\n";
   }
-  condition.notify_one();
+  condition.notify_all();
 }
 
 void ThreadPool::waitForCompletion() {
