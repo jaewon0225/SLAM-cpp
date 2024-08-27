@@ -101,77 +101,77 @@ void PoseGraph::computeErrorAndJacobians(Eigen::MatrixXd &H,
   pool.waitForCompletion();
 }
 
-  void PoseGraph::optimise(int iterations) {
-    int filenum = 1;
-    for (int iter = 0; iter < iterations; ++iter) {
-      Eigen::MatrixXd H =
-          Eigen::MatrixXd::Zero(poses.size() * 3, poses.size() * 3);
-      Eigen::VectorXd b = Eigen::VectorXd::Zero(poses.size() * 3);
+void PoseGraph::optimise(int iterations) {
+  int filenum = 1;
+  for (int iter = 0; iter < iterations; ++iter) {
+    Eigen::MatrixXd H =
+        Eigen::MatrixXd::Zero(poses.size() * 3, poses.size() * 3);
+    Eigen::VectorXd b = Eigen::VectorXd::Zero(poses.size() * 3);
 
-      computeErrorAndJacobians(H, b);
-      H.block<3, 3>(0, 0) += Eigen::Matrix3d::Identity();
-      // Solve for dx
-      Eigen::VectorXd dx = H.ldlt().solve(-b);
+    computeErrorAndJacobians(H, b);
+    H.block<3, 3>(0, 0) += Eigen::Matrix3d::Identity();
+    // Solve for dx
+    Eigen::VectorXd dx = H.ldlt().solve(-b);
 
-      // Update poses and write to file
-      std::string filename =
-          "../output/output_" + std::to_string(filenum) + ".txt";
-      std::ofstream outFile(filename);
-      for (int i = 0; i < poses.size(); ++i) {
-        poses[i].position.x() += dx(3 * i);
-        poses[i].position.y() += dx(3 * i + 1);
-        poses[i].orientation += dx(3 * i + 2);
+    // Update poses and write to file
+    std::string filename =
+        "../output/output_" + std::to_string(filenum) + ".txt";
+    std::ofstream outFile(filename);
+    for (int i = 0; i < poses.size(); ++i) {
+      poses[i].position.x() += dx(3 * i);
+      poses[i].position.y() += dx(3 * i + 1);
+      poses[i].orientation += dx(3 * i + 2);
 
-        outFile << std::round(poses[i].position.x() * 1000) / 1000 << ","
-                << std::round(poses[i].position.y() * 1000) / 1000 << ","
-                << std::round(poses[i].orientation * 1000) / 1000 << std::endl;
-      }
-      outFile.close();
-      std::cout << "Optimising..." << std::endl;
-      filenum++;
+      outFile << std::round(poses[i].position.x() * 1000) / 1000 << ","
+              << std::round(poses[i].position.y() * 1000) / 1000 << ","
+              << std::round(poses[i].orientation * 1000) / 1000 << std::endl;
     }
+    outFile.close();
+    std::cout << "Optimising..." << std::endl;
+    filenum++;
   }
+}
 
-  void PoseGraph::importEdges(std::string filename) {
-    std::ifstream file(filename);
-    std::string line;
+void PoseGraph::importEdges(std::string filename) {
+  std::ifstream file(filename);
+  std::string line;
 
-    // Skip the header line
-    std::getline(file, line);
+  // Skip the header line
+  std::getline(file, line);
 
-    while (std::getline(file, line)) {
-      std::istringstream iss(line);
+  while (std::getline(file, line)) {
+    std::istringstream iss(line);
 
-      std::string type;
-      u_int64_t IDout, IDin;
-      double dx, dy, dth, I11, I12, I22, I33, I13, I23;
-      Eigen::Matrix3d info_matrix;
-      iss >> type >> IDout >> IDin >> dx >> dy >> dth >> I11 >> I12 >> I22 >>
-          I33 >> I13 >> I23;
-      info_matrix << I11, I12, I13, I12, I22, I23, I13, I23, I33;
-      Pose measurement(dx, dy, dth);
-      Edge edge(IDout, IDin, measurement, info_matrix);
-      addEdge(edge);
-    }
+    std::string type;
+    u_int64_t IDout, IDin;
+    double dx, dy, dth, I11, I12, I22, I33, I13, I23;
+    Eigen::Matrix3d info_matrix;
+    iss >> type >> IDout >> IDin >> dx >> dy >> dth >> I11 >> I12 >> I22 >>
+        I33 >> I13 >> I23;
+    info_matrix << I11, I12, I13, I12, I22, I23, I13, I23, I33;
+    Pose measurement(dx, dy, dth);
+    Edge edge(IDout, IDin, measurement, info_matrix);
+    addEdge(edge);
   }
+}
 
-  void PoseGraph::importPoses(std::string filename) {
-    std::ifstream file(filename);
-    std::string line;
+void PoseGraph::importPoses(std::string filename) {
+  std::ifstream file(filename);
+  std::string line;
 
-    // Skip the header line
-    std::getline(file, line);
+  // Skip the header line
+  std::getline(file, line);
 
-    while (std::getline(file, line)) {
-      std::istringstream iss(line);
+  while (std::getline(file, line)) {
+    std::istringstream iss(line);
 
-      std::string type;
-      u_int64_t ID;
-      double x, y, theta;
-      Eigen::Matrix3d info_matrix;
-      iss >> type >> ID >> x >> y >> theta;
-      Pose pose(x, y, theta);
-      addPose(pose, ID);
-    }
+    std::string type;
+    u_int64_t ID;
+    double x, y, theta;
+    Eigen::Matrix3d info_matrix;
+    iss >> type >> ID >> x >> y >> theta;
+    Pose pose(x, y, theta);
+    addPose(pose, ID);
   }
+}
 } // namespace PoseGraph
